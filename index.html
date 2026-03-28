@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Big Six · UPSA Academic Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<style>
+:root {
+  --bg: #f7f9fc;
+  --surface: #ffffff;
+  --surface2: #f0f4f8;
+  --surface3: #e6edf5;
+  --border: #d1dbe8;
+  --accent: #0a7c5c;
+  --accent2: #1a6fb5;
+  --gold: #c47f00;
+  --red: #c0392b;
+  --green: #16a34a;
+  --text: #1a2535;
+  --muted: #7a8fa6;
+  --muted2: #4a6580;
+  --teal: #0e9e8e;
+  --orange: #f57c3a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden;}
+
+/* Grid bg */
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(10,124,92,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(10,124,92,0.04) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0;}
+
+/* ── SCREENS ── */
+.screen{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;transition:opacity 0.35s,transform 0.35s;}
+.screen.hidden{opacity:0;pointer-events:none;transform:translateY(12px);visibility:hidden;}
+.full-screen{position:relative;z-index:5;background:var(--bg);overflow-y:auto;min-height:100vh;display:block;}
+.full-screen.hidden{display:none!important;}
+
+/* ── LANDING ── */
+.landing-wrap{text-align:center;max-width:560px;padding:40px 24px;width:100%;position:relative;z-index:1;}
+.brand-pill{display:inline-flex;align-items:center;gap:8px;font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--teal);border:1px solid rgba(14,158,142,0.3);padding:5px 16px;border-radius:20px;margin-bottom:28px;}
+.brand-pill::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--teal);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.portal-title{font-family:'Syne',sans-serif;font-size:clamp(36px,8vw,62px);font-weight:800;letter-spacing:-0.03em;line-height:1.0;color:var(--text);margin-bottom:10px;}
+.portal-title span{color:var(--teal);}
+.portal-sub{color:var(--muted2);font-size:12px;letter-spacing:0.06em;margin-bottom:48px;}
+.landing-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:left;}
+.lcard{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:26px 22px 22px;cursor:pointer;transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s;position:relative;overflow:hidden;}
+.lcard:hover{transform:translateY(-3px);}
+.lcard.admin:hover{border-color:var(--teal);box-shadow:0 6px 28px rgba(14,158,142,0.14);}
+.lcard.student:hover{border-color:var(--accent2);box-shadow:0 6px 28px rgba(26,111,181,0.14);}
+.lcard-icon{font-size:26px;margin-bottom:12px;display:block;}
+.lcard-type{font-size:9px;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:4px;}
+.admin .lcard-type{color:var(--teal);}
+.student .lcard-type{color:var(--accent2);}
+.lcard-title{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;color:var(--text);margin-bottom:6px;}
+.lcard-desc{font-size:11px;color:var(--muted2);line-height:1.6;}
+.lcard-arrow{position:absolute;bottom:18px;right:18px;font-size:16px;opacity:0.25;transition:opacity 0.2s,transform 0.2s;}
+.lcard:hover .lcard-arrow{opacity:1;transform:translate(3px,-3px);}
+
+/* ── AUTH SCREENS ── */
+.auth-wrap{width:100%;max-width:400px;padding:32px 20px;position:relative;z-index:1;}
+.back-btn{background:none;border:none;display:inline-flex;align-items:center;gap:8px;font-size:11px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-bottom:32px;transition:color 0.2s;font-family:'DM Mono',monospace;}
+.back-btn:hover{color:var(--accent);}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:36px 30px;box-shadow:0 2px 20px rgba(0,0,0,0.07);position:relative;overflow:hidden;}
+.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.auth-card.admin-card::before{background:linear-gradient(90deg,var(--teal),var(--accent2));}
+.auth-card.student-card::before{background:linear-gradient(90deg,var(--accent2),var(--teal));}
+.auth-title{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;margin-bottom:5px;}
+.auth-sub{font-size:11px;color:var(--muted2);margin-bottom:26px;line-height:1.6;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted2);margin-bottom:7px;}
+.field input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Mono',monospace;font-size:14px;padding:11px 14px;outline:none;transition:border-color 0.2s;}
+.field input:focus{border-color:var(--teal);}
+.field input::placeholder{color:var(--muted);}
+.auth-err{background:rgba(192,57,43,0.08);border:1px solid rgba(192,57,43,0.2);border-radius:7px;color:var(--red);font-size:11px;padding:9px 13px;margin-bottom:14px;display:none;}
+.auth-info{background:rgba(14,158,142,0.07);border:1px solid rgba(14,158,142,0.2);border-radius:7px;color:var(--teal);font-size:11px;padding:9px 13px;margin-bottom:14px;display:none;}
+.btn-full{width:100%;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.07em;text-transform:uppercase;border:none;border-radius:9px;padding:13px;cursor:pointer;transition:all 0.2s;margin-top:6px;}
+.btn-teal{background:var(--teal);color:#fff;}
+.btn-teal:hover{background:#0a8a7d;transform:translateY(-1px);}
+.btn-blue{background:var(--accent2);color:#fff;}
+.btn-blue:hover{background:#155fa0;transform:translateY(-1px);}
+.auth-switch{text-align:center;margin-top:16px;font-size:11px;color:var(--muted2);}
+.auth-switch a{color:var(--teal);cursor:pointer;text-decoration:underline;}
+
+/* ── ADMIN DASHBOARD ── */
+.dash-container{max-width:1100px;margin:0 auto;padding:28px 18px 80px;position:relative;z-index:1;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px;}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+.topbar-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:var(--text);}
+.topbar-logo span{color:var(--teal);}
+.topbar-badge{font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--teal);background:rgba(14,158,142,0.1);border:1px solid rgba(14,158,142,0.2);padding:3px 10px;border-radius:12px;}
+.topbar-right{display:flex;gap:8px;flex-wrap:wrap;}
+.btn{font-family:'Syne',sans-serif;font-weight:700;font-size:10px;letter-spacing:0.07em;text-transform:uppercase;border-radius:7px;padding:8px 14px;cursor:pointer;border:none;transition:all 0.2s;}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted2);}
+.btn-outline:hover{border-color:var(--teal);color:var(--teal);}
+.btn-accent{background:var(--teal);color:#fff;}
+.btn-accent:hover{background:#0a8a7d;}
+.btn-red{background:rgba(192,57,43,0.1);border:1px solid rgba(192,57,43,0.2);color:var(--red);}
+.btn-red:hover{background:rgba(192,57,43,0.2);}
+.btn-gold{background:rgba(196,127,0,0.1);border:1px solid rgba(196,127,0,0.25);color:var(--gold);}
+.btn-gold:hover{background:rgba(196,127,0,0.2);}
+.btn-green{background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.25);color:var(--green);}
+.btn-green:hover{background:rgba(22,163,74,0.2);}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:4px;background:var(--surface2);border-radius:10px;padding:4px;margin-bottom:22px;flex-wrap:wrap;}
+.tab{font-family:'Syne',sans-serif;font-weight:700;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:8px 16px;border-radius:7px;border:none;background:transparent;color:var(--muted2);cursor:pointer;transition:all 0.2s;}
+.tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+
+/* ── PANELS ── */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:0 1px 5px rgba(0,0,0,0.05);}
+.panel-title{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.step-dot{width:20px;height:20px;border-radius:50%;background:var(--teal);color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:10px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ── STUDENT TABLE ── */
+.stbl{width:100%;border-collapse:collapse;font-size:12px;}
+.stbl th{background:var(--surface2);padding:9px 12px;text-align:left;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted2);border-bottom:1px solid var(--border);}
+.stbl td{padding:9px 12px;border-bottom:1px solid rgba(209,219,232,0.5);vertical-align:middle;}
+.stbl tr:last-child td{border-bottom:none;}
+.stbl tr:hover td{background:rgba(14,158,142,0.03);}
+.stbl input[type=text],.stbl input[type=number]{background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:5px 9px;outline:none;transition:border-color 0.2s;width:100%;}
+.stbl input:focus{border-color:var(--teal);}
+
+/* score input */
+.score-inp{width:64px!important;}
+.grade-chip{display:inline-block;padding:2px 8px;border-radius:12px;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;letter-spacing:0.05em;}
+.gA{background:rgba(10,124,92,0.12);color:#0a7c5c;}
+.gBp{background:rgba(26,111,181,0.12);color:#1a6fb5;}
+.gB{background:rgba(108,63,160,0.12);color:#6c3fa0;}
+.gCp{background:rgba(14,158,142,0.12);color:#0e9e8e;}
+.gC{background:rgba(196,127,0,0.12);color:#c47f00;}
+.gDp{background:rgba(184,92,0,0.12);color:#b85c00;}
+.gD{background:rgba(160,69,0,0.12);color:#a04500;}
+.gF{background:rgba(192,57,43,0.12);color:#c0392b;}
+.pass-chip{display:inline-block;padding:2px 9px;border-radius:12px;font-family:'Syne',sans-serif;font-weight:700;font-size:10px;}
+.pass-chip.pass{background:rgba(22,163,74,0.1);color:var(--green);}
+.pass-chip.fail{background:rgba(192,57,43,0.1);color:var(--red);}
+
+/* semester selector */
+.sem-label-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px;}
+.sem-badge{background:rgba(14,158,142,0.1);border:1px solid rgba(14,158,142,0.25);color:var(--teal);font-size:11px;padding:4px 14px;border-radius:12px;font-family:'Syne',sans-serif;font-weight:700;}
+
+/* publish bar */
+.publish-bar{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 22px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.publish-status{font-size:12px;font-family:'Syne',sans-serif;font-weight:700;}
+
+/* ── STUDENT PORTAL ── */
+.student-container{max-width:780px;margin:0 auto;padding:28px 18px 80px;position:relative;z-index:1;}
+.hero-card{background:linear-gradient(135deg,#0a2a22,#0f3d52);border-radius:18px;padding:28px 26px;margin-bottom:22px;position:relative;overflow:hidden;}
+.hero-card::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+.hero-name{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#fff;margin-bottom:3px;}
+.hero-id{font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:0.1em;margin-bottom:18px;}
+.hero-stats{display:flex;gap:16px;flex-wrap:wrap;}
+.hero-stat{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px 16px;min-width:90px;}
+.hero-stat-val{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#fff;line-height:1;}
+.hero-stat-lbl{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-top:4px;}
+.hero-logout{position:absolute;top:18px;right:18px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);font-family:'Syne',sans-serif;font-weight:700;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:7px 14px;border-radius:8px;cursor:pointer;transition:all 0.2s;}
+.hero-logout:hover{background:rgba(255,255,255,0.15);}
+
+/* subject bars */
+.subj-bar-item{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.subj-bar-name{font-size:11px;color:var(--muted2);width:160px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.subj-bar-track{flex:1;height:7px;background:var(--surface3);border-radius:4px;overflow:hidden;}
+.subj-bar-fill{height:100%;border-radius:4px;transition:width 0.8s ease;}
+.subj-bar-score{font-family:'Syne',sans-serif;font-weight:700;font-size:12px;width:36px;text-align:right;}
+
+/* semester history table */
+.sem-hist-table{width:100%;border-collapse:collapse;font-size:12px;}
+.sem-hist-table th{padding:8px 12px;text-align:left;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted2);border-bottom:1px solid var(--border);background:var(--surface2);}
+.sem-hist-table td{padding:9px 12px;border-bottom:1px solid rgba(209,219,232,0.5);}
+.sem-hist-table tr:last-child td{border-bottom:none;}
+
+/* leaderboard */
+.lb-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;margin-bottom:6px;transition:background 0.2s;}
+.lb-row:hover{background:var(--surface2);}
+.lb-row.is-me{background:rgba(14,158,142,0.07);border:1px solid rgba(14,158,142,0.15);}
+.lb-pos{font-family:'Syne',sans-serif;font-weight:800;font-size:14px;width:32px;text-align:center;}
+.lb-name{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;flex:1;}
+.lb-bar-wrap{width:100px;height:6px;background:var(--surface3);border-radius:3px;overflow:hidden;}
+.lb-bar{height:100%;border-radius:3px;}
+.lb-score{font-family:'Syne',sans-serif;font-weight:800;font-size:13px;width:48px;text-align:right;}
+.lb-cgpa{font-size:11px;color:var(--muted2);width:52px;text-align:right;}
+
+/* save indicator */
+.save-dot{display:inline-flex;align-items:center;gap:6px;font-size:10px;color:var(--muted);letter-spacing:0.08em;padding:5px 12px;border:1px solid var(--border);border-radius:6px;}
+.save-dot::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;}
+
+/* toast */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a2535;color:#fff;padding:11px 22px;border-radius:10px;font-size:12px;opacity:0;transition:all 0.3s;z-index:9999;white-space:nowrap;pointer-events:none;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* loading overlay */
+#loadingOverlay{position:fixed;inset:0;background:var(--bg);z-index:9998;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:11px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;}
+
+/* status badge */
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;}
+.status-dot.live{background:var(--green);box-shadow:0 0 6px var(--green);}
+.status-dot.offline{background:var(--red);}
+
+/* tab content */
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* empty state */
+.empty-state{text-align:center;padding:48px 20px;color:var(--muted);}
+.empty-state .ei{font-size:36px;margin-bottom:12px;}
+.empty-state p{font-size:13px;}
+
+/* kente strip */
+.kente{height:5px;background:repeating-linear-gradient(90deg,var(--teal) 0,var(--teal) 10px,var(--orange) 10px,var(--orange) 16px,#d4a017 16px,#d4a017 22px,#0a7c5c 22px,#0a7c5c 28px);border-radius:3px;margin:20px 0;opacity:0.7;}
+
+/* PIN modal */
+.modal-bg{position:fixed;inset:0;background:rgba(10,26,24,0.6);z-index:500;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-bg.hidden{display:none;}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:36px 30px;max-width:340px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.15);}
+.pin-dots{display:flex;justify-content:center;gap:12px;margin:24px 0;}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border);transition:all 0.15s;}
+.pin-dot.filled{background:var(--teal);border-color:var(--teal);}
+.pin-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:220px;margin:0 auto;}
+.pin-key{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;padding:14px;border:1px solid var(--border);border-radius:10px;background:var(--surface2);cursor:pointer;transition:all 0.15s;color:var(--text);}
+.pin-key:hover{border-color:var(--teal);color:var(--teal);}
+.pin-key.del{font-size:13px;color:var(--muted2);}
+.pin-key.cancel-key{font-size:11px;color:var(--red);border-color:rgba(192,57,43,0.2);}
+.pin-shake{animation:shake 0.35s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;margin-bottom:18px;}
+.stat-box{background:var(--surface2);border-radius:10px;padding:14px 12px;text-align:center;}
+.stat-val{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;}
+.stat-lbl{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted2);margin-top:4px;}
+
+/* Responsive */
+@media(max-width:600px){
+  .landing-cards{grid-template-columns:1fr;}
+  .hero-stats{gap:10px;}
+  .subj-bar-name{width:110px;}
+  .lb-bar-wrap{display:none;}
+  .topbar-right{gap:5px;}
+  .btn{padding:7px 10px;font-size:9px;}
+}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn 0.4s ease both;}
+</style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-txt">Connecting to portal...</div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- PIN Modal -->
+<div class="modal-bg hidden" id="pinModal">
+  <div class="modal-box" id="pinBox">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:6px;">Admin PIN</div>
+    <div style="font-size:11px;color:var(--muted2);margin-bottom:4px;">Enter your 4-digit PIN to continue</div>
+    <div id="pinErr" style="font-size:11px;color:var(--red);min-height:16px;margin-top:6px;"></div>
+    <div class="pin-dots">
+      <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinPress('1')">1</button>
+      <button class="pin-key" onclick="pinPress('2')">2</button>
+      <button class="pin-key" onclick="pinPress('3')">3</button>
+      <button class="pin-key" onclick="pinPress('4')">4</button>
+      <button class="pin-key" onclick="pinPress('5')">5</button>
+      <button class="pin-key" onclick="pinPress('6')">6</button>
+      <button class="pin-key" onclick="pinPress('7')">7</button>
+      <button class="pin-key" onclick="pinPress('8')">8</button>
+      <button class="pin-key" onclick="pinPress('9')">9</button>
+      <button class="pin-key cancel-key" onclick="pinPress('cancel')">✕</button>
+      <button class="pin-key" onclick="pinPress('0')">0</button>
+      <button class="pin-key del" onclick="pinPress('del')">⌫</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SCREEN: LANDING                        -->
+<!-- ══════════════════════════════════════ -->
+<div class="screen" id="screenLanding">
+  <div class="landing-wrap fade-in">
+    <div class="brand-pill">HangOut Publications · UPSA</div>
+    <div class="portal-title">The <span>Big Six</span><br>Academic Portal</div>
+    <div class="portal-sub">Level 100 · 2025/2026 · Secure Results Platform</div>
+    <div class="kente"></div>
+    <div class="landing-cards">
+      <div class="lcard admin" onclick="showAdminLogin()">
+        <span class="lcard-icon">🔐</span>
+        <div class="lcard-type">Administrator</div>
+        <div class="lcard-title">Admin Dashboard</div>
+        <div class="lcard-desc">Enter scores, manage students, publish results per semester.</div>
+        <div class="lcard-arrow">↗</div>
+      </div>
+      <div class="lcard student" onclick="showStudentLogin()">
+        <span class="lcard-icon">🎓</span>
+        <div class="lcard-type">Student</div>
+        <div class="lcard-title">My Results</div>
+        <div class="lcard-desc">View your scores, CGPA history and group leaderboard.</div>
+        <div class="lcard-arrow">↗</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;font-size:10px;color:var(--muted);text-align:center;" id="firebaseStatus">Connecting...</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SCREEN: ADMIN LOGIN                    -->
+<!-- ══════════════════════════════════════ -->
+<div class="screen hidden" id="screenAdminLogin">
+  <div class="auth-wrap fade-in">
+    <button class="back-btn" onclick="showScreen('screenLanding')">← Back</button>
+    <div class="auth-card admin-card">
+      <div class="auth-title">Admin Login</div>
+      <div class="auth-sub">Enter your admin PIN to access the dashboard.</div>
+      <div class="auth-err" id="adminLoginErr"></div>
+      <div class="pin-dots" style="justify-content:flex-start;gap:10px;margin-bottom:18px;">
+        <div class="pin-dot" id="apd0"></div><div class="pin-dot" id="apd1"></div>
+        <div class="pin-dot" id="apd2"></div><div class="pin-dot" id="apd3"></div>
+      </div>
+      <div class="pin-keypad" style="max-width:100%;">
+        <button class="pin-key" onclick="adminPinPress('1')">1</button>
+        <button class="pin-key" onclick="adminPinPress('2')">2</button>
+        <button class="pin-key" onclick="adminPinPress('3')">3</button>
+        <button class="pin-key" onclick="adminPinPress('4')">4</button>
+        <button class="pin-key" onclick="adminPinPress('5')">5</button>
+        <button class="pin-key" onclick="adminPinPress('6')">6</button>
+        <button class="pin-key" onclick="adminPinPress('7')">7</button>
+        <button class="pin-key" onclick="adminPinPress('8')">8</button>
+        <button class="pin-key" onclick="adminPinPress('9')">9</button>
+        <button class="pin-key cancel-key" onclick="showScreen('screenLanding')">✕</button>
+        <button class="pin-key" onclick="adminPinPress('0')">0</button>
+        <button class="pin-key del" onclick="adminPinPress('del')">⌫</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SCREEN: STUDENT LOGIN                  -->
+<!-- ══════════════════════════════════════ -->
+<div class="screen hidden" id="screenStudentLogin">
+  <div class="auth-wrap fade-in">
+    <button class="back-btn" onclick="showScreen('screenLanding')">← Back</button>
+    <div class="auth-card student-card" id="studentAuthCard">
+      <div class="auth-title" id="studentAuthTitle">Student Login</div>
+      <div class="auth-sub" id="studentAuthSub">Enter your name and password to view your results.</div>
+      <div class="auth-err" id="studentLoginErr"></div>
+      <div class="auth-info" id="studentLoginInfo"></div>
+      <div class="field">
+        <label>Your Full Name</label>
+        <input type="text" id="sLoginName" placeholder="e.g. Bless Mensah" autocomplete="name">
+      </div>
+      <div class="field" id="sPasswordField">
+        <label>Password</label>
+        <input type="password" id="sLoginPass" placeholder="Your password">
+      </div>
+      <div class="field hidden" id="sNewPassField">
+        <label>Create Password</label>
+        <input type="password" id="sNewPass" placeholder="Choose a password">
+      </div>
+      <div class="field hidden" id="sConfirmPassField">
+        <label>Confirm Password</label>
+        <input type="password" id="sConfirmPass" placeholder="Re-enter password">
+      </div>
+      <button class="btn-full btn-blue" id="studentAuthBtn" onclick="handleStudentAuth()">Login →</button>
+      <div class="auth-switch" id="studentAuthSwitch">
+        First time? <a onclick="toggleStudentRegister()">Set up your password</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SCREEN: ADMIN DASHBOARD                -->
+<!-- ══════════════════════════════════════ -->
+<div class="full-screen hidden" id="screenAdmin">
+  <div class="dash-container">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-logo">Big <span>Six</span> · UPSA</div>
+        <div class="topbar-badge">Admin</div>
+        <div class="save-dot" id="saveDot">Auto-saved</div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-outline" onclick="exportCSV()">⬇ CSV</button>
+        <button class="btn btn-gold" onclick="showChangePIN()">🔑 PIN</button>
+        <button class="btn btn-red" onclick="confirmClearAll()">🗑</button>
+        <button class="btn btn-outline" onclick="logout()">← Exit</button>
+      </div>
+    </div>
+
+    <!-- Semester label + publish bar -->
+    <div class="panel" style="margin-bottom:14px;">
+      <div class="sem-label-row">
+        <span style="font-size:11px;color:var(--muted2);letter-spacing:0.08em;text-transform:uppercase;">Current Semester</span>
+        <input type="text" id="semLabel" value="Semester 1" style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Syne',sans-serif;font-weight:700;font-size:13px;padding:5px 12px;outline:none;max-width:200px;" oninput="saveMeta()">
+        <div class="sem-badge" id="semBadge">Semester 1</div>
+      </div>
+    </div>
+
+    <div class="publish-bar">
+      <div>
+        <div class="publish-status" id="publishStatus"><span class="status-dot offline" id="publishDot"></span>Not Published</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px;">Students cannot see results until you publish.</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-accent" id="publishBtn" onclick="publishResults()">🚀 Publish Results</button>
+        <button class="btn btn-red hidden" id="unpublishBtn" onclick="unpublishResults()">Hide Results</button>
+        <button class="btn btn-gold" onclick="archiveSemester()">📦 Archive & New Semester</button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('students')" id="tab-students">👥 Students</button>
+      <button class="tab" onclick="switchTab('scores')" id="tab-scores">📝 Scores</button>
+      <button class="tab" onclick="switchTab('results')" id="tab-results">📊 Results</button>
+      <button class="tab" onclick="switchTab('history')" id="tab-history">📚 History</button>
+    </div>
+
+    <!-- TAB: Students -->
+    <div class="tab-content active" id="tabStudents">
+      <div class="panel">
+        <div class="panel-title"><span class="step-dot">1</span>Registered Students</div>
+        <div style="font-size:11px;color:var(--muted2);margin-bottom:16px;">Add each student's name and ID, then set their password directly from here.</div>
+        <div id="studentCardsWrap" style="display:flex;flex-direction:column;gap:10px;"></div>
+        <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-accent" onclick="addStudentRow()">+ Add Student</button>
+          <button class="btn btn-outline" onclick="loadDefaultStudents()">Load Big Six Roster</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Scores -->
+    <div class="tab-content" id="tabScores">
+      <div class="panel">
+        <div class="panel-title"><span class="step-dot">2</span>Enter Scores — <span id="scoreSemLabel" style="color:var(--teal);text-transform:none;font-weight:400;font-size:11px;"></span></div>
+        <div style="margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <span style="font-size:11px;color:var(--muted2);">Subjects:</span>
+          <div id="subjectTagsWrap" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+          <input type="text" id="subjectInput" placeholder="Add subject..." style="width:180px;" onkeydown="if(event.key==='Enter')addSubject()">
+          <button class="btn btn-accent" onclick="addSubject()">+ Add</button>
+          <button class="btn btn-outline" onclick="loadDefaultSubjects()">UPSA Defaults</button>
+        </div>
+        <div style="overflow-x:auto;" id="scoresTableWrap"></div>
+        <div style="margin-top:14px;">
+          <button class="btn btn-accent" onclick="calculateAndSave()" style="padding:10px 24px;font-size:11px;">⚡ Calculate & Save Results</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Results -->
+    <div class="tab-content" id="tabResults">
+      <div id="resultsContent"><div class="empty-state"><div class="ei">📊</div><p>Calculate results first.</p></div></div>
+    </div>
+
+    <!-- TAB: History -->
+    <div class="tab-content" id="tabHistory">
+      <div id="historyContent"><div class="empty-state"><div class="ei">📚</div><p>No archived semesters yet.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- SCREEN: STUDENT PORTAL                 -->
+<!-- ══════════════════════════════════════ -->
+<div class="full-screen hidden" id="screenStudent">
+  <div class="student-container">
+    <div class="hero-card fade-in" id="studentHero">
+      <button class="hero-logout" onclick="logout()">Logout</button>
+      <div class="hero-name" id="heroName">—</div>
+      <div class="hero-id" id="heroId">—</div>
+      <div class="hero-stats" id="heroStats"></div>
+    </div>
+
+    <!-- Current semester results -->
+    <div class="panel fade-in" id="currentSemPanel">
+      <div class="panel-title">📋 Current Semester — <span id="currentSemName" style="color:var(--teal);text-transform:none;font-weight:400;"></span></div>
+      <div id="currentSemContent"><div class="empty-state"><div class="ei">⏳</div><p>Results not published yet.</p></div></div>
+    </div>
+
+    <!-- CGPA History -->
+    <div class="panel fade-in" id="cgpaHistPanel" style="display:none;">
+      <div class="panel-title">📈 CGPA History</div>
+      <div style="overflow-x:auto;">
+        <table class="sem-hist-table" id="cgpaHistTable"></table>
+      </div>
+      <canvas id="cgpaChart" height="120" style="margin-top:16px;"></canvas>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="panel fade-in">
+      <div class="panel-title">🏆 Group Leaderboard</div>
+      <div id="lbSemTabs" style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;"></div>
+      <div id="leaderboardContent"><div class="empty-state"><p>No results published yet.</p></div></div>
+    </div>
+
+    <div style="text-align:center;font-size:10px;color:var(--muted);margin-top:20px;line-height:1.8;">
+      The Big Six Study Group · UPSA Level 100 · 2025/2026<br>
+      <span style="color:rgba(122,184,176,0.5);">Powered by HangOut Publications</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!-- FIREBASE + APP LOGIC                   -->
+<!-- ══════════════════════════════════════ -->
+<script>
+// ── FIREBASE CONFIG ──
+const FB_CONFIG = {
+  apiKey: "AIzaSyE6Td0Va6z6z3MHRtkZW3XUzX6z3LV0uw",
+  authDomain: "the-big-six-cdafa.firebaseapp.com",
+  projectId: "the-big-six-cdafa",
+  storageBucket: "the-big-six-cdafa.firebasestorage.app",
+  messagingSenderId: "45532981166",
+  appId: "1:45532981166:web:0680c94411c59b2ef00a3f"
+};
+
+let db = null;
+let fbReady = false;
+
+// ── APP STATE ──
+let adminPINHash = '';
+let registeredStudents = []; // [{name, id, passwordHash, hasPassword}]
+let subjects = [];
+let scores = {}; // {studentId: [s1,s2,...]}
+let calculatedData = [];
+let semesterHistory = []; // [{label, subjects, data, publishedAt}]
+let currentSemLabel = 'Semester 1';
+let resultsPublished = false;
+let currentStudent = null; // logged-in student object
+let adminPinBuf = '';
+let adminPinAttempts = 0;
+let cgpaChartInst = null;
+let lbActiveSem = 'current';
+
+// ── FIREBASE INIT ──
+function loadFBScript(src) {
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    const timer = setTimeout(() => rej(new Error('timeout')), 5000);
+    s.src = src;
+    s.onload = () => { clearTimeout(timer); res(); };
+    s.onerror = () => { clearTimeout(timer); rej(new Error('load error')); };
+    document.head.appendChild(s);
+  });
+}
+
+async function initFirebase() {
+  const base = 'https://www.gstatic.com/firebasejs/10.12.0/';
+  try {
+    await loadFBScript(base + 'firebase-app-compat.js');
+    await loadFBScript(base + 'firebase-firestore-compat.js');
+    firebase.initializeApp(FB_CONFIG);
+    db = firebase.firestore();
+    fbReady = true;
+    document.getElementById('firebaseStatus').textContent = '🟢 Connected to cloud';
+    document.getElementById('firebaseStatus').style.color = 'var(--accent)';
+  } catch(e) {
+    console.warn('Firebase failed:', e);
+    document.getElementById('firebaseStatus').textContent = '🔴 Offline mode';
+    document.getElementById('firebaseStatus').style.color = 'var(--red)';
+  }
+}
+
+// ── DB HELPERS ──
+// ── localStorage backup keys ──
+const LS_STUDENTS = 'bigsix_students';
+const LS_SESSION  = 'bigsix_session';
+const LS_CONFIG   = 'bigsix_config';
+
+function lsKey(col, doc) { return 'bigsix__' + col + '__' + doc; }
+
+async function dbSet(col, doc, data) {
+  // Always save to localStorage immediately
+  try {
+    const existing = JSON.parse(localStorage.getItem(lsKey(col,doc)) || '{}');
+    localStorage.setItem(lsKey(col,doc), JSON.stringify({...existing, ...data}));
+    // Also update the collection list
+    const listKey = 'bigsix__list__' + col;
+    const list = JSON.parse(localStorage.getItem(listKey) || '[]');
+    if (!list.includes(doc)) { list.push(doc); localStorage.setItem(listKey, JSON.stringify(list)); }
+  } catch(e) {}
+  // Then try Firebase
+  if (fbReady) {
+    try { await db.collection(col).doc(doc).set(data, {merge:true}); } catch(e) { console.warn('FB set failed:', e); }
+  }
+}
+async function dbGet(col, doc) {
+  if (fbReady) {
+    try {
+      const snap = await db.collection(col).doc(doc).get();
+      if (snap.exists) {
+        // Sync to localStorage
+        try { localStorage.setItem(lsKey(col,doc), JSON.stringify(snap.data())); } catch(e){}
+        return snap.data();
+      }
+    } catch(e) { console.warn('FB get failed:', e); }
+  }
+  // Fallback to localStorage
+  try {
+    const raw = localStorage.getItem(lsKey(col,doc));
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+async function dbGetAll(col) {
+  if (fbReady) {
+    try {
+      const snap = await db.collection(col).get();
+      const results = snap.docs.map(d => ({id:d.id, ...d.data()}));
+      // Sync to localStorage
+      results.forEach(r => { try { localStorage.setItem(lsKey(col,r.id), JSON.stringify(r)); } catch(e){} });
+      return results;
+    } catch(e) { console.warn('FB getAll failed:', e); }
+  }
+  // Fallback to localStorage
+  try {
+    const listKey = 'bigsix__list__' + col;
+    const list = JSON.parse(localStorage.getItem(listKey) || '[]');
+    return list.map(doc => {
+      try { return JSON.parse(localStorage.getItem(lsKey(col,doc)) || 'null'); } catch(e) { return null; }
+    }).filter(Boolean);
+  } catch(e) { return []; }
+}
+async function dbDelete(col, doc) {
+  try { localStorage.removeItem(lsKey(col,doc)); } catch(e) {}
+  if (fbReady) { try { await db.collection(col).doc(doc).delete(); } catch(e) {} }
+}
+
+// ── CRYPTO HELPERS ──
+async function hashStr(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function verifyHash(plain, hash) {
+  return (await hashStr(plain)) === hash;
+}
+
+// ── NAVIGATION ──
+function showScreen(id) {
+  ['screenLanding','screenAdminLogin','screenStudentLogin'].forEach(s => {
+    document.getElementById(s).classList.toggle('hidden', s !== id);
+  });
+  ['screenAdmin','screenStudent'].forEach(s => {
+    document.getElementById(s).classList.toggle('hidden', s !== id);
+  });
+}
+function logout() {
+  currentStudent = null;
+  adminPinBuf = '';
+  showScreen('screenLanding');
+}
+function showAdminLogin() {
+  adminPinBuf = '';
+  updateAdminPinDots();
+  document.getElementById('adminLoginErr').style.display = 'none';
+  showScreen('screenAdminLogin');
+}
+function showStudentLogin() {
+  resetStudentAuthForm();
+  showScreen('screenStudentLogin');
+}
+
+// ── ADMIN PIN ──
+function updateAdminPinDots() {
+  for (let i=0;i<4;i++) document.getElementById('apd'+i).classList.toggle('filled', i < adminPinBuf.length);
+}
+async function adminPinPress(k) {
+  if (k === 'cancel') { showScreen('screenLanding'); return; }
+  if (k === 'del') { adminPinBuf = adminPinBuf.slice(0,-1); updateAdminPinDots(); return; }
+  if (adminPinBuf.length >= 4) return;
+  adminPinBuf += k;
+  updateAdminPinDots();
+  if (adminPinBuf.length === 4) {
+    await checkAdminPin();
+  }
+}
+async function checkAdminPin() {
+  const err = document.getElementById('adminLoginErr');
+  // Default PIN is 1234 if none set
+  if (!adminPINHash) {
+    adminPINHash = await hashStr('1234');
+    await dbSet('config','admin',{pinHash: adminPINHash});
+  }
+  const ok = await verifyHash(adminPinBuf, adminPINHash);
+  adminPinBuf = '';
+  updateAdminPinDots();
+  if (ok) {
+    err.style.display = 'none';
+    adminPinAttempts = 0;
+    showScreen('screenAdmin');
+    renderAdminDashboard();
+  } else {
+    adminPinAttempts++;
+    err.textContent = `Wrong PIN. Try again. (${adminPinAttempts} attempt${adminPinAttempts>1?'s':''})`;
+    err.style.display = 'block';
+    document.getElementById('pinBox')?.classList.add('pin-shake');
+    setTimeout(() => document.getElementById('pinBox')?.classList.remove('pin-shake'), 350);
+  }
+}
+async function showChangePIN() {
+  const p = prompt('Enter new 4-digit PIN:');
+  if (!p || !/^\d{4}$/.test(p)) { toast('PIN must be 4 digits.'); return; }
+  adminPINHash = await hashStr(p);
+  await dbSet('config','admin',{pinHash: adminPINHash});
+  toast('PIN updated! ✅');
+}
+
+// ── STUDENT AUTH ──
+let studentRegMode = false;
+function toggleStudentRegister() {
+  studentRegMode = !studentRegMode;
+  document.getElementById('sPasswordField').classList.toggle('hidden', studentRegMode);
+  document.getElementById('sNewPassField').classList.toggle('hidden', !studentRegMode);
+  document.getElementById('sConfirmPassField').classList.toggle('hidden', !studentRegMode);
+  document.getElementById('studentAuthTitle').textContent = studentRegMode ? 'Set Your Password' : 'Student Login';
+  document.getElementById('studentAuthSub').textContent = studentRegMode
+    ? 'First time? Create your password to secure your account.'
+    : 'Enter your name and password to view your results.';
+  document.getElementById('studentAuthBtn').textContent = studentRegMode ? 'Create Password →' : 'Login →';
+  document.getElementById('studentAuthSwitch').innerHTML = studentRegMode
+    ? 'Already set up? <a onclick="toggleStudentRegister()">Login here</a>'
+    : 'First time? <a onclick="toggleStudentRegister()">Set up your password</a>';
+  document.getElementById('studentLoginErr').style.display = 'none';
+  document.getElementById('studentLoginInfo').style.display = 'none';
+}
+function resetStudentAuthForm() {
+  studentRegMode = false;
+  document.getElementById('sLoginName').value = '';
+  document.getElementById('sLoginPass').value = '';
+  document.getElementById('sNewPass').value = '';
+  document.getElementById('sConfirmPass').value = '';
+  document.getElementById('sPasswordField').classList.remove('hidden');
+  document.getElementById('sNewPassField').classList.add('hidden');
+  document.getElementById('sConfirmPassField').classList.add('hidden');
+  document.getElementById('studentAuthTitle').textContent = 'Student Login';
+  document.getElementById('studentAuthSub').textContent = 'Enter your name and password to view your results.';
+  document.getElementById('studentAuthBtn').textContent = 'Login →';
+  document.getElementById('studentAuthSwitch').innerHTML = 'First time? <a onclick="toggleStudentRegister()">Set up your password</a>';
+  document.getElementById('studentLoginErr').style.display = 'none';
+  document.getElementById('studentLoginInfo').style.display = 'none';
+}
+async function handleStudentAuth() {
+  const name = document.getElementById('sLoginName').value.trim();
+  const err = document.getElementById('studentLoginErr');
+  const info = document.getElementById('studentLoginInfo');
+  err.style.display = 'none'; info.style.display = 'none';
+
+  if (!name) { err.textContent = 'Please enter your full name.'; err.style.display='block'; return; }
+
+  // Find student in registered list
+  const reg = registeredStudents.find(s => s.name.trim().toLowerCase() === name.toLowerCase());
+  if (!reg) { err.textContent = 'Name not found. Check spelling or ask your admin.'; err.style.display='block'; return; }
+
+  if (studentRegMode) {
+    // Setting password for first time
+    const np = document.getElementById('sNewPass').value;
+    const cp = document.getElementById('sConfirmPass').value;
+    if (np.length < 4) { err.textContent = 'Password must be at least 4 characters.'; err.style.display='block'; return; }
+    if (np !== cp) { err.textContent = 'Passwords do not match.'; err.style.display='block'; return; }
+    if (reg.hasPassword) { err.textContent = 'Password already set. Please login normally.'; err.style.display='block'; return; }
+    const hash = await hashStr(np);
+    await dbSet('students', reg.id, {passwordHash: hash, hasPassword: true});
+    reg.passwordHash = hash; reg.hasPassword = true;
+    info.textContent = '✅ Password set! Logging you in...';
+    info.style.display = 'block';
+    setTimeout(() => loginStudent(reg), 900);
+  } else {
+    // Normal login
+    if (!reg.hasPassword) {
+      err.textContent = 'No password set yet. Click "Set up your password" below.';
+      err.style.display = 'block'; return;
+    }
+    const pass = document.getElementById('sLoginPass').value;
+    if (!pass) { err.textContent = 'Please enter your password.'; err.style.display='block'; return; }
+    const ok = await verifyHash(pass, reg.passwordHash);
+    if (!ok) { err.textContent = 'Wrong password. Try again.'; err.style.display='block'; return; }
+    loginStudent(reg);
+  }
+}
+function loginStudent(reg) {
+  currentStudent = reg;
+  showScreen('screenStudent');
+  renderStudentPortal(reg);
+}
+
+// ── LOAD ALL DATA ──
+async function loadAllData() {
+  // Config (PIN, meta)
+  const cfg = await dbGet('config','admin');
+  if (cfg) {
+    if (cfg.pinHash) adminPINHash = cfg.pinHash;
+    if (cfg.semLabel) currentSemLabel = cfg.semLabel;
+  }
+
+  // Students
+  const studs = await dbGetAll('students');
+  if (studs.length) {
+    registeredStudents = studs.map(s => ({
+      name: s.name || s.id,
+      id: s.id,
+      passwordHash: s.passwordHash || '',
+      hasPassword: s.hasPassword || false
+    }));
+  }
+
+  // Current session
+  const sess = await dbGet('sessions','current');
+  if (sess) {
+    subjects = sess.subjects || [];
+    scores = sess.scores || {};
+    calculatedData = sess.calculatedData || [];
+    resultsPublished = sess.resultsPublished || false;
+  }
+
+  // Semester history
+  const hist = await dbGetAll('history');
+  semesterHistory = hist.sort((a,b) => (a.archivedAt||'') < (b.archivedAt||'') ? -1 : 1);
+}
+
+// ── SAVE HELPERS ──
+async function saveMeta() {
+  currentSemLabel = document.getElementById('semLabel').value || 'Semester 1';
+  document.getElementById('semBadge').textContent = currentSemLabel;
+  document.getElementById('scoreSemLabel').textContent = currentSemLabel;
+  await dbSet('config','admin',{semLabel: currentSemLabel});
+}
+async function saveSession() {
+  flashSave();
+  await dbSet('sessions','current',{
+    subjects, scores, calculatedData, resultsPublished,
+    semLabel: currentSemLabel,
+    updatedAt: new Date().toISOString()
+  });
+}
+async function saveStudents() {
+  for (const s of registeredStudents) {
+    await dbSet('students', s.id, {name:s.name, id:s.id, hasPassword:s.hasPassword||false, passwordHash:s.passwordHash||''});
+  }
+}
+function flashSave() {
+  const el = document.getElementById('saveDot');
+  if (!el) return;
+  el.style.color = 'var(--teal)';
+  el.textContent = '✓ Saved';
+  setTimeout(() => { el.style.color=''; el.textContent='Auto-saved'; }, 2000);
+}
+
+// ── ADMIN DASHBOARD ──
+function renderAdminDashboard() {
+  document.getElementById('semLabel').value = currentSemLabel;
+  document.getElementById('semBadge').textContent = currentSemLabel;
+  document.getElementById('scoreSemLabel').textContent = currentSemLabel;
+  renderStudentRegTable();
+  renderScoresTable();
+  renderAdminResults();
+  renderAdminHistory();
+  updatePublishUI();
+}
+function switchTab(name) {
+  ['students','scores','results','history'].forEach(t => {
+    document.getElementById('tab-'+t).classList.toggle('active', t===name);
+    document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.toggle('active', t===name);
+  });
+}
+
+// ── STUDENT REGISTRATION TABLE ──
+function renderStudentRegTable() {
+  const wrap = document.getElementById('studentCardsWrap');
+  if (!registeredStudents.length) {
+    wrap.innerHTML = `<div style="text-align:center;padding:32px;color:var(--muted);font-size:12px;">No students yet. Click "Load Big Six Roster" to get started.</div>`;
+    return;
+  }
+  wrap.innerHTML = registeredStudents.map((s, i) => `
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+      <div style="display:flex;align-items:flex-start;gap:10px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--teal);color:#fff;font-family:'Syne',sans-serif;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">${i+1}</div>
+        <div style="flex:1;min-width:0;">
+          <input type="text" value="${escHtml(s.name)}" placeholder="Full name e.g. Bless Mensah"
+            style="width:100%;font-size:14px;font-family:'Syne',sans-serif;font-weight:700;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);outline:none;margin-bottom:7px;"
+            oninput="registeredStudents[${i}].name=this.value"
+            onblur="saveStudents()">
+          <input type="text" value="${escHtml(s.id)}" placeholder="Student ID e.g. BS-001"
+            style="width:100%;font-size:12px;font-family:'DM Mono',monospace;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:8px 12px;color:var(--muted2);outline:none;"
+            oninput="registeredStudents[${i}].id=this.value"
+            onblur="saveStudents()">
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;flex-wrap:wrap;gap:8px;">
+        <div style="font-size:11px;">
+          ${s.hasPassword
+            ? '<span style="color:var(--green);font-weight:700;">✅ Password set</span>'
+            : '<span style="color:var(--orange);font-weight:700;">⏳ No password yet</span>'}
+        </div>
+        <div style="display:flex;gap:7px;">
+          <button onclick="adminSetPassword(${i})" style="font-family:\'Syne\',sans-serif;font-weight:700;font-size:11px;padding:7px 14px;border-radius:7px;border:none;background:var(--teal);color:#fff;cursor:pointer;">🔑 ${s.hasPassword ? 'Change PW' : 'Set PW'}</button>
+          <button onclick="removeStudent(${i})" style="font-family:\'Syne\',sans-serif;font-weight:700;font-size:11px;padding:7px 12px;border-radius:7px;border:1px solid rgba(192,57,43,0.3);background:rgba(192,57,43,0.08);color:var(--red);cursor:pointer;">✕</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function adminSetPassword(i) {
+  const s = registeredStudents[i];
+  const pw = prompt('Set password for ' + s.name + ':\n(minimum 4 characters)');
+  if (pw === null) return;
+  if (!pw || pw.trim().length < 4) { toast('Password must be at least 4 characters.'); return; }
+  try {
+    const hash = await hashStr(pw.trim());
+    registeredStudents[i].passwordHash = hash;
+    registeredStudents[i].hasPassword = true;
+    await dbSet('students', s.id, {name: s.name, id: s.id, passwordHash: hash, hasPassword: true});
+    renderStudentRegTable();
+    toast('✅ Password set for ' + s.name + '!');
+  } catch(e) {
+    console.error('Set password error:', e);
+    toast('❌ Error: ' + e.message);
+  }
+}
+function addStudentRow() {
+  const n = registeredStudents.length + 1;
+  const newS = {name:`Student ${n}`, id:`BS-${String(n).padStart(3,'0')}`, passwordHash:'', hasPassword:false};
+  registeredStudents.push(newS);
+  saveStudents();
+  renderStudentRegTable();
+  renderScoresTable();
+}
+function removeStudent(i) {
+  if (!confirm(`Remove ${registeredStudents[i].name}?`)) return;
+  const id = registeredStudents[i].id;
+  registeredStudents.splice(i,1);
+  delete scores[id];
+  dbDelete('students', id);
+  saveStudents();
+  renderStudentRegTable();
+  renderScoresTable();
+}
+async function resetStudentPassword(id) {
+  if (!confirm(`Reset password for student ${id}? They will need to set a new one.`)) return;
+  const s = registeredStudents.find(s=>s.id===id);
+  if (s) { s.hasPassword=false; s.passwordHash=''; }
+  await dbSet('students',id,{hasPassword:false,passwordHash:''});
+  renderStudentRegTable();
+  toast('Password reset. Student can set a new one on next login.');
+}
+function loadDefaultStudents() {
+  if (registeredStudents.length && !confirm('Replace current student list with Big Six roster?')) return;
+  registeredStudents = [
+    {name:'Bless Mensah',      id:'BS-001', passwordHash:'', hasPassword:false},
+    {name:'Bright Adjei',      id:'BS-002', passwordHash:'', hasPassword:false},
+    {name:'Alphaues Quartey',  id:'BS-003', passwordHash:'', hasPassword:false},
+    {name:'Shadrach Mensah',   id:'BS-004', passwordHash:'', hasPassword:false},
+    {name:'Hillary Oku',       id:'BS-005', passwordHash:'', hasPassword:false},
+    {name:'Benjamin Azame',    id:'BS-006', passwordHash:'', hasPassword:false},
+    {name:'Sakor Aziz',        id:'BS-007', passwordHash:'', hasPassword:false},
+    {name:'Ewurajoa',          id:'BS-008', passwordHash:'', hasPassword:false},
+    {name:'Leonard Kabenla',   id:'BS-009', passwordHash:'', hasPassword:false},
+    {name:'Akadu Miracle',     id:'BS-010', passwordHash:'', hasPassword:false},
+    {name:'John Amoah',        id:'BS-011', passwordHash:'', hasPassword:false},
+  ];
+  saveStudents();
+  renderStudentRegTable();
+  renderScoresTable();
+  toast('Big Six roster loaded!');
+}
+
+// ── SUBJECTS ──
+function addSubject() {
+  const inp = document.getElementById('subjectInput');
+  const v = inp.value.trim();
+  if (!v || subjects.includes(v)) { inp.value=''; return; }
+  subjects.push(v); inp.value='';
+  renderSubjectTags();
+  renderScoresTable();
+  saveSession();
+}
+function removeSubject(i) {
+  subjects.splice(i,1);
+  renderSubjectTags(); renderScoresTable(); saveSession();
+}
+function loadDefaultSubjects() {
+  subjects = ['Intro to French','Environmental Mgt','Communication Skills','Business Communication','Intro to Info Tech'];
+  renderSubjectTags(); renderScoresTable(); saveSession(); toast('UPSA subjects loaded!');
+}
+function renderSubjectTags() {
+  document.getElementById('subjectTagsWrap').innerHTML = subjects.map((s,i) =>
+    `<span style="display:inline-flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:4px 10px;font-size:11px;">
+      ${escHtml(s)}<button onclick="removeSubject(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;line-height:1;padding:0;">×</button>
+    </span>`
+  ).join('');
+}
+
+// ── SCORES TABLE ──
+function renderScoresTable() {
+  const wrap = document.getElementById('scoresTableWrap');
+  if (!registeredStudents.length || !subjects.length) {
+    wrap.innerHTML = `<div class="empty-state"><div class="ei">📋</div><p>Add students and subjects to begin.</p></div>`;
+    return;
+  }
+  const subjectHeaders = subjects.map(s => `<th>${escHtml(s)}</th>`).join('');
+  const rows = registeredStudents.map((st,i) => {
+    const inputs = subjects.map((s,j) => {
+      const val = (scores[st.id] && scores[st.id][j] !== undefined) ? scores[st.id][j] : '';
+      return `<td><input type="number" class="score-inp" min="0" max="100" value="${val}" placeholder="—"
+        oninput="setScore('${st.id}',${j},this.value)" /></td>`;
+    }).join('');
+    return `<tr><td style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;">${escHtml(st.name)}</td>
+      <td style="font-size:10px;color:var(--muted);">${st.id}</td>
+      ${inputs}
+      <td id="rowAvg_${st.id}" style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:var(--muted);">—</td>
+    </tr>`;
+  }).join('');
+  wrap.innerHTML = `<table class="stbl"><thead><tr>
+    <th>Name</th><th>ID</th>${subjectHeaders}<th>Avg</th>
+  </tr></thead><tbody>${rows}</tbody></table>`;
+  // restore live averages
+  registeredStudents.forEach(st => updateLiveAvg(st.id));
+}
+function setScore(id, j, val) {
+  if (!scores[id]) scores[id] = {};
+  scores[id][j] = val === '' ? '' : parseFloat(val);
+  updateLiveAvg(id);
+  autoSaveDebounced();
+}
+function updateLiveAvg(id) {
+  const el = document.getElementById(`rowAvg_${id}`);
+  if (!el) return;
+  const vals = subjects.map((_,j) => {
+    const v = scores[id]?.[j];
+    return (v !== '' && v !== undefined && !isNaN(v) && v >= 0 && v <= 100) ? parseFloat(v) : null;
+  }).filter(v => v !== null);
+  if (!vals.length) { el.textContent = '—'; el.style.color = 'var(--muted)'; return; }
+  const avg = (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1);
+  const g = getGrade(parseFloat(avg));
+  el.textContent = avg + '%';
+  el.style.color = gradeColor(g.grade);
+}
+let autoTimer = null;
+function autoSaveDebounced() { clearTimeout(autoTimer); autoTimer = setTimeout(saveSession, 2500); }
+
+// ── CALCULATE ──
+function calculateAndSave() {
+  if (!subjects.length) { toast('Add subjects first.'); return; }
+  calculatedData = registeredStudents.map(st => {
+    const stuScores = subjects.map((_,j) => {
+      const v = scores[st.id]?.[j];
+      return (v !== '' && v !== undefined && !isNaN(v) && parseFloat(v) >= 0 && parseFloat(v) <= 100) ? parseFloat(v) : null;
+    });
+    const filled = stuScores.filter(v => v !== null);
+    const avg = filled.length ? parseFloat((filled.reduce((a,b)=>a+b,0)/filled.length).toFixed(2)) : null;
+    const g = getGrade(avg);
+    return {name:st.name, id:st.id, scores:stuScores, avg, cgpa:g.cgpa, grade:g.grade};
+  });
+  saveSession();
+  renderAdminResults();
+  switchTab('results');
+  toast('Results calculated! Publish when ready.');
+}
+
+// ── ADMIN RESULTS VIEW ──
+function renderAdminResults() {
+  if (!calculatedData.length) return;
+  const sorted = [...calculatedData].filter(d=>d.avg!==null).sort((a,b)=>b.avg-a.avg);
+  const medals = ['🥇','🥈','🥉'];
+  const classAvg = sorted.length ? (sorted.reduce((a,b)=>a+b.avg,0)/sorted.length).toFixed(1) : '—';
+  const passing = sorted.filter(d=>d.avg>=50).length;
+
+  const subjectHeaders = subjects.map(s=>`<th style="text-align:center;">${escHtml(s.length>8?s.slice(0,7)+'…':s)}</th>`).join('');
+  const rows = calculatedData.map(d => {
+    const rank = sorted.findIndex(s=>s.id===d.id);
+    const g = getGrade(d.avg);
+    const pass = d.avg !== null && d.avg >= 50;
+    const medal = rank < 3 ? medals[rank] : `#${rank+1}`;
+    const subCells = subjects.map((_,j) => {
+      const sc = d.scores[j]; const sg = getGrade(sc);
+      return `<td style="text-align:center;"><span class="grade-chip ${sg.cls}">${sc !== null ? sc : '—'}</span></td>`;
+    }).join('');
+    return `<tr>
+      <td style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;">${medal} ${escHtml(d.name)}</td>
+      ${subCells}
+      <td style="text-align:center;font-family:'Syne',sans-serif;font-weight:800;color:${gradeColor(g.grade)}">${d.avg !== null ? d.avg+'%' : '—'}</td>
+      <td style="text-align:center;"><span class="grade-chip ${g.cls}">${g.grade}</span></td>
+      <td style="text-align:center;font-family:'Syne',sans-serif;font-weight:700;color:${gradeColor(g.grade)}">${g.cgpa !== null ? g.cgpa.toFixed(1) : '—'}</td>
+      <td style="text-align:center;"><span class="pass-chip ${pass?'pass':'fail'}">${pass?'PASS':'FAIL'}</span></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('resultsContent').innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-val" style="color:var(--teal)">${sorted.length}</div><div class="stat-lbl">Students</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--green)">${passing}</div><div class="stat-lbl">Passed</div></div>
+      <div class="stat-box"><div class="stat-val">${classAvg}%</div><div class="stat-lbl">Class Avg</div></div>
+      <div class="stat-box"><div class="stat-val" style="color:var(--teal)">${sorted[0]?.avg || '—'}%</div><div class="stat-lbl">Top Score</div></div>
+    </div>
+    <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border);">
+      <table class="stbl"><thead><tr>
+        <th>Student</th>${subjectHeaders}
+        <th style="text-align:center;">Avg</th><th style="text-align:center;">Grade</th>
+        <th style="text-align:center;">CGPA</th><th style="text-align:center;">Status</th>
+      </tr></thead><tbody>${rows}</tbody></table>
+    </div>`;
+}
+
+// ── PUBLISH ──
+async function publishResults() {
+  if (!calculatedData.length) { toast('Calculate results first.'); return; }
+  resultsPublished = true;
+  await saveSession();
+  updatePublishUI();
+  toast('✅ Results published! Students can now see them.');
+}
+async function unpublishResults() {
+  if (!confirm('Hide results from students?')) return;
+  resultsPublished = false;
+  await saveSession();
+  updatePublishUI();
+  toast('Results hidden.');
+}
+function updatePublishUI() {
+  const pb = document.getElementById('publishBtn');
+  const ub = document.getElementById('unpublishBtn');
+  const ps = document.getElementById('publishStatus');
+  const pd = document.getElementById('publishDot');
+  if (!pb) return;
+  if (resultsPublished) {
+    pb.classList.add('hidden'); ub.classList.remove('hidden');
+    ps.innerHTML = '<span class="status-dot live"></span>LIVE — Students can view results';
+    ps.style.color = 'var(--green)';
+    pd.className = 'status-dot live';
+  } else {
+    pb.classList.remove('hidden'); ub.classList.add('hidden');
+    ps.innerHTML = '<span class="status-dot offline"></span>Not Published';
+    ps.style.color = 'var(--red)';
+    pd.className = 'status-dot offline';
+  }
+}
+
+// ── ARCHIVE ──
+async function archiveSemester() {
+  if (!calculatedData.length) { toast('No results to archive.'); return; }
+  if (!confirm(`Archive "${currentSemLabel}" and start a new semester? This cannot be undone.`)) return;
+  const archiveDoc = {
+    label: currentSemLabel,
+    subjects: [...subjects],
+    data: [...calculatedData],
+    archivedAt: new Date().toISOString()
+  };
+  const archiveId = 'sem_' + Date.now();
+  await dbSet('history', archiveId, archiveDoc);
+  semesterHistory.push({id:archiveId, ...archiveDoc});
+
+  // Determine next semester name
+  const match = currentSemLabel.match(/(\d+)$/);
+  const nextNum = match ? parseInt(match[1]) + 1 : 2;
+  currentSemLabel = currentSemLabel.replace(/\d+$/, '') + nextNum || `Semester ${nextNum}`;
+
+  // Reset current
+  subjects = []; scores = {}; calculatedData = []; resultsPublished = false;
+  await saveSession();
+  await dbSet('config','admin',{semLabel: currentSemLabel});
+  document.getElementById('semLabel').value = currentSemLabel;
+  document.getElementById('semBadge').textContent = currentSemLabel;
+  document.getElementById('scoreSemLabel').textContent = currentSemLabel;
+  renderAdminDashboard();
+  toast(`✅ "${archiveDoc.label}" archived! Starting ${currentSemLabel}.`);
+}
+
+// ── ADMIN HISTORY ──
+function renderAdminHistory() {
+  if (!semesterHistory.length) return;
+  const content = semesterHistory.map(sem => {
+    const top = sem.data ? [...sem.data].filter(d=>d.avg!==null).sort((a,b)=>b.avg-a.avg)[0] : null;
+    const avg = sem.data ? (sem.data.filter(d=>d.avg!==null).reduce((a,b)=>a+(b.avg||0),0) / sem.data.filter(d=>d.avg!==null).length).toFixed(1) : '—';
+    return `<div class="panel" style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:15px;">${escHtml(sem.label)}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;">Archived ${sem.archivedAt ? new Date(sem.archivedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—'}</div>
+        </div>
+        <div style="display:flex;gap:12px;">
+          <div class="stat-box"><div class="stat-val" style="font-size:16px;">${avg}%</div><div class="stat-lbl">Class Avg</div></div>
+          ${top ? `<div class="stat-box"><div class="stat-val" style="font-size:15px;color:var(--teal)">${escHtml(top.name.split(' ')[0])}</div><div class="stat-lbl">Top Student</div></div>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('historyContent').innerHTML = content;
+}
+
+// ── EXPORT ──
+function exportCSV() {
+  if (!calculatedData.length) { toast('Calculate results first.'); return; }
+  let csv = ['Name','ID',...subjects,'Average','Grade','CGPA','Status'].join(',') + '\n';
+  calculatedData.forEach(d => {
+    const g = getGrade(d.avg);
+    csv += [`"${d.name}"`,`"${d.id}"`,...d.scores.map(s=>s!==null?s:''),d.avg!==null?d.avg:'',g.grade,d.cgpa!==null?d.cgpa.toFixed(2):'',d.avg!==null&&d.avg>=50?'PASS':'FAIL'].join(',') + '\n';
+  });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download = `bigsix-${currentSemLabel.replace(/\s+/g,'-')}.csv`;
+  a.click();
+  toast('CSV exported!');
+}
+async function confirmClearAll() {
+  if (!confirm('Clear ALL data including students, scores, and history? This cannot be undone.')) return;
+  subjects=[]; scores={}; calculatedData=[]; semesterHistory=[];
+  resultsPublished=false; registeredStudents=[];
+  await saveSession();
+  renderAdminDashboard();
+  toast('All data cleared.');
+}
+
+// ── STUDENT PORTAL ──
+async function renderStudentPortal(reg) {
+  // Load fresh data
+  const sess = await dbGet('sessions','current');
+  if (sess) {
+    subjects = sess.subjects || subjects;
+    calculatedData = sess.calculatedData || calculatedData;
+    resultsPublished = sess.resultsPublished || false;
+    currentSemLabel = sess.semLabel || currentSemLabel;
+  }
+  const hist = await dbGetAll('history');
+  semesterHistory = hist.sort((a,b) => (a.archivedAt||'') < (b.archivedAt||'') ? -1 : 1);
+
+  // Find student in all semesters
+  const allSems = [...semesterHistory, {label: currentSemLabel, data: calculatedData, isCurrent: true}];
+  const myHistory = allSems.map(sem => {
+    const entry = (sem.data||[]).find(d => d.id === reg.id || d.name.toLowerCase() === reg.name.toLowerCase());
+    return entry ? {label:sem.label, ...entry, isCurrent:!!sem.isCurrent} : null;
+  }).filter(Boolean);
+
+  // Cumulative CGPA (average across all semesters)
+  const cgpas = myHistory.filter(h=>h.cgpa!==null).map(h=>h.cgpa);
+  const cumulativeCGPA = cgpas.length ? (cgpas.reduce((a,b)=>a+b,0)/cgpas.length).toFixed(2) : '—';
+  const latestEntry = myHistory[myHistory.length-1] || null;
+
+  // Hero
+  document.getElementById('heroName').textContent = reg.name;
+  document.getElementById('heroId').textContent = `${reg.id} · UPSA Level 100`;
+  document.getElementById('heroStats').innerHTML = `
+    <div class="hero-stat"><div class="hero-stat-val">${cumulativeCGPA}</div><div class="hero-stat-lbl">Cumul. CGPA</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">${myHistory.length}</div><div class="hero-stat-lbl">Semesters</div></div>
+    ${latestEntry ? `<div class="hero-stat"><div class="hero-stat-val" style="color:${gradeColor(getGrade(latestEntry.avg).grade)}">${latestEntry.avg !== null ? latestEntry.avg+'%' : '—'}</div><div class="hero-stat-lbl">Latest Avg</div></div>` : ''}
+    ${latestEntry ? `<div class="hero-stat"><div class="hero-stat-val">${getGrade(latestEntry.avg).grade}</div><div class="hero-stat-lbl">Grade</div></div>` : ''}
+  `;
+
+  // Current semester
+  document.getElementById('currentSemName').textContent = currentSemLabel;
+  const curEntry = resultsPublished ? calculatedData.find(d => d.id===reg.id || d.name.toLowerCase()===reg.name.toLowerCase()) : null;
+  if (curEntry && resultsPublished) {
+    const g = getGrade(curEntry.avg);
+    const pass = curEntry.avg !== null && curEntry.avg >= 50;
+    const bars = subjects.map((s,j) => {
+      const sc = curEntry.scores[j]; const sg = getGrade(sc);
+      return `<div class="subj-bar-item">
+        <div class="subj-bar-name" title="${s}">${s}</div>
+        <div class="subj-bar-track"><div class="subj-bar-fill" style="width:${sc||0}%;background:${gradeColor(sg.grade)};"></div></div>
+        <div class="subj-bar-score" style="color:${gradeColor(sg.grade)}">${sc !== null ? sc : '—'}</div>
+      </div>`;
+    }).join('');
+    document.getElementById('currentSemContent').innerHTML = `
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px;">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:36px;color:${gradeColor(g.grade)}">${curEntry.avg !== null ? curEntry.avg+'%' : '—'}</div>
+        <div>
+          <span class="grade-chip ${g.cls}" style="font-size:13px;padding:4px 12px;">${g.grade}</span>
+          <span class="pass-chip ${pass?'pass':'fail'}" style="margin-left:6px;">${pass?'PASS':'FAIL'}</span>
+          <div style="margin-top:4px;font-size:11px;color:var(--muted2);">CGPA: <strong style="color:${gradeColor(g.grade)}">${g.cgpa !== null ? g.cgpa.toFixed(2)+' / 4.0' : '—'}</strong></div>
+        </div>
+      </div>
+      <div>${bars}</div>`;
+  } else {
+    document.getElementById('currentSemContent').innerHTML = `<div class="empty-state"><div class="ei">⏳</div><p>Results for ${currentSemLabel} have not been published yet.</p></div>`;
+  }
+
+  // CGPA History
+  if (myHistory.length > 0) {
+    document.getElementById('cgpaHistPanel').style.display = '';
+    const rows = myHistory.map(h => {
+      const g = getGrade(h.avg);
+      return `<tr>
+        <td style="font-family:'Syne',sans-serif;font-weight:700;">${escHtml(h.label)}${h.isCurrent?' <span style="font-size:9px;color:var(--teal);letter-spacing:0.1em;">CURRENT</span>':''}</td>
+        <td style="text-align:center;font-family:'Syne',sans-serif;font-weight:800;color:${gradeColor(g.grade)}">${h.avg !== null ? h.avg+'%' : '—'}</td>
+        <td style="text-align:center;"><span class="grade-chip ${g.cls}">${g.grade}</span></td>
+        <td style="text-align:center;font-family:'Syne',sans-serif;font-weight:700;color:${gradeColor(g.grade)}">${h.cgpa !== null ? h.cgpa.toFixed(2) : '—'}</td>
+        <td style="text-align:center;"><span class="pass-chip ${h.avg!==null&&h.avg>=50?'pass':'fail'}">${h.avg!==null&&h.avg>=50?'PASS':'FAIL'}</span></td>
+      </tr>`;
+    }).join('');
+    document.getElementById('cgpaHistTable').innerHTML = `
+      <thead><tr>
+        <th>Semester</th><th style="text-align:center;">Average</th>
+        <th style="text-align:center;">Grade</th><th style="text-align:center;">CGPA</th><th style="text-align:center;">Status</th>
+      </tr></thead><tbody>${rows}</tbody>`;
+    // CGPA chart
+    if (cgpaChartInst) cgpaChartInst.destroy();
+    cgpaChartInst = new Chart(document.getElementById('cgpaChart'), {
+      type:'line',
+      data:{
+        labels: myHistory.map(h=>h.label),
+        datasets:[{
+          label:'CGPA', data:myHistory.map(h=>h.cgpa),
+          borderColor:'#0e9e8e', backgroundColor:'rgba(14,158,142,0.07)',
+          fill:true, tension:0.4, pointRadius:5, pointBackgroundColor:'#0e9e8e', borderWidth:2
+        }]
+      },
+      options:{responsive:true,scales:{y:{min:0,max:4,ticks:{color:'#7a8fa6',font:{family:'DM Mono',size:10}},grid:{color:'rgba(0,0,0,0.05)'}},x:{ticks:{color:'#7a8fa6',font:{family:'DM Mono',size:10}},grid:{display:false}}},plugins:{legend:{display:false}}}
+    });
+  }
+
+  // Leaderboard
+  lbActiveSem = 'current';
+  renderLeaderboard(reg);
+}
+
+function renderLeaderboard(currentReg) {
+  // Build tab options
+  const tabs = [{key:'current', label:'Current Sem'}];
+  semesterHistory.forEach((s,i) => tabs.push({key:'hist_'+i, label:s.label}));
+  if (semesterHistory.length >= 1) tabs.push({key:'cumulative', label:'All Time'});
+
+  document.getElementById('lbSemTabs').innerHTML = tabs.map(t =>
+    `<button style="font-family:'Syne',sans-serif;font-weight:700;font-size:10px;letter-spacing:0.07em;text-transform:uppercase;padding:7px 14px;border-radius:7px;border:none;cursor:pointer;transition:all 0.2s;${lbActiveSem===t.key?'background:var(--teal);color:#fff;':'background:var(--surface2);color:var(--muted2);'}" onclick="lbActiveSem='${t.key}';renderLeaderboard(window._lbReg)">${t.label}</button>`
+  ).join('');
+  window._lbReg = currentReg;
+
+  let data = [];
+  if (lbActiveSem === 'current') {
+    data = [...calculatedData].filter(d=>d.avg!==null).sort((a,b)=>b.avg-a.avg);
+  } else if (lbActiveSem === 'cumulative') {
+    const map = {};
+    const allData = [...semesterHistory.flatMap(s=>s.data||[]), ...calculatedData];
+    allData.forEach(d => {
+      if (!map[d.name]) map[d.name] = {name:d.name, id:d.id, cgpas:[], avgs:[]};
+      if (d.cgpa !== null) map[d.name].cgpas.push(d.cgpa);
+      if (d.avg !== null) map[d.name].avgs.push(d.avg);
+    });
+    data = Object.values(map).map(s => ({
+      name:s.name, id:s.id,
+      avg: s.avgs.length ? parseFloat((s.avgs.reduce((a,b)=>a+b,0)/s.avgs.length).toFixed(1)) : null,
+      cgpa: s.cgpas.length ? parseFloat((s.cgpas.reduce((a,b)=>a+b,0)/s.cgpas.length).toFixed(2)) : null
+    })).filter(d=>d.avg!==null).sort((a,b)=>b.avg-a.avg);
+  } else {
+    const idx = parseInt(lbActiveSem.replace('hist_',''));
+    data = [...(semesterHistory[idx]?.data||[])].filter(d=>d.avg!==null).sort((a,b)=>b.avg-a.avg);
+  }
+
+  if (!data.length) {
+    document.getElementById('leaderboardContent').innerHTML = '<div class="empty-state"><p>No results for this period.</p></div>';
+    return;
+  }
+
+  const medals = ['🥇','🥈','🥉'];
+  const maxAvg = data[0].avg;
+  const html = data.map((d,i) => {
+    const g = getGrade(d.avg);
+    const isMe = d.id === currentReg.id || d.name.toLowerCase() === currentReg.name.toLowerCase();
+    const pos = i < 3 ? medals[i] : `#${i+1}`;
+    return `<div class="lb-row ${isMe?'is-me':''}">
+      <div class="lb-pos" style="color:${i<3?'var(--gold)':'var(--muted2)'}">${pos}</div>
+      <div class="lb-name" style="color:${isMe?'var(--teal)':'var(--text)'}">${escHtml(d.name)}${isMe?' <span style="font-size:9px;color:var(--teal);">(You)</span>':''}</div>
+      <div class="lb-bar-wrap"><div class="lb-bar" style="width:${maxAvg>0?(d.avg/maxAvg*100):0}%;background:${gradeColor(g.grade)};"></div></div>
+      <div class="lb-score" style="color:${gradeColor(g.grade)}">${d.avg}%</div>
+      <div class="lb-cgpa">${d.cgpa!==null?d.cgpa.toFixed(2):''} CGPA</div>
+    </div>`;
+  }).join('');
+  document.getElementById('leaderboardContent').innerHTML = html;
+}
+
+// ── GRADE HELPERS ──
+function getGrade(score) {
+  if (score===null||score===''||isNaN(score)) return {grade:'—',cls:'',cgpa:null};
+  const s = parseFloat(score);
+  if (s>=80) return {grade:'A',   cls:'gA',  cgpa:4.0};
+  if (s>=75) return {grade:'B+',  cls:'gBp', cgpa:3.5};
+  if (s>=70) return {grade:'B',   cls:'gB',  cgpa:3.0};
+  if (s>=65) return {grade:'C+',  cls:'gCp', cgpa:2.5};
+  if (s>=60) return {grade:'C',   cls:'gC',  cgpa:2.0};
+  if (s>=55) return {grade:'D+',  cls:'gDp', cgpa:1.5};
+  if (s>=50) return {grade:'D',   cls:'gD',  cgpa:1.0};
+  return {grade:'F',cls:'gF',cgpa:0.0};
+}
+function gradeColor(g) {
+  return {'A':'#0a7c5c','B+':'#1a6fb5','B':'#6c3fa0','C+':'#0e9e8e','C':'#c47f00','D+':'#b85c00','D':'#a04500','F':'#c0392b'}[g]||'#7a8fa6';
+}
+
+// ── UTILS ──
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── KEYBOARD SHORTCUTS ──
+document.addEventListener('keydown', e => {
+  if (document.getElementById('screenStudentLogin').classList.contains('hidden') === false) {
+    if (e.key === 'Enter') handleStudentAuth();
+  }
+});
+
+// ── BOOT ──
+function hideLoader() {
+  document.getElementById('loadingOverlay').style.display = 'none';
+}
+
+// Hard timeout — if anything hangs, force show the portal after 6s
+const bootTimeout = setTimeout(() => {
+  console.warn('Boot timeout — forcing portal open');
+  hideLoader();
+}, 6000);
+
+(async function boot() {
+  try {
+    // Give Firebase max 4 seconds to connect
+    await Promise.race([
+      initFirebase(),
+      new Promise(res => setTimeout(res, 4000))
+    ]);
+    // Give data load max 4 seconds
+    await Promise.race([
+      loadAllData(),
+      new Promise(res => setTimeout(res, 4000))
+    ]);
+  } catch(e) {
+    console.warn('Boot error:', e);
+  } finally {
+    clearTimeout(bootTimeout);
+    hideLoader();
+  }
+})();
+</script>
+</body>
+</html>
